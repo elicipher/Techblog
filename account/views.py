@@ -10,7 +10,7 @@ from .serializers import (
 
 from .models import OtpCode , User
 import random
-from .permissions import IsNotAuthenticated
+from permissions import IsNotAuthenticated
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 import uuid

@@ -3,7 +3,8 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.utils import timezone 
 from datetime import timedelta
 from .managers import UserManager 
-from blog.models import Tag
+
+
 
 # Create your models here.
 
@@ -13,7 +14,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    interest = models.ManyToManyField(Tag , blank= True , related_name='interests_tags')
+    interest = models.ManyToManyField('blog.tag' , blank= True , related_name='interests_tags')
 
 
     USERNAME_FIELD = 'email'

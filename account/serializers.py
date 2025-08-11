@@ -1,6 +1,13 @@
 from rest_framework import serializers
-from .models import User
-from blog.models import Tag
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+
+def get_tag_queryset():
+    from blog.models import Tag
+    return Tag.objects.all()
+
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
@@ -11,7 +18,8 @@ class OTPSerializer(serializers.Serializer):
 
 
 class InitialProfileSerializer(serializers.ModelSerializer):
-    interest = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),many=True)
+
+    interest = serializers.PrimaryKeyRelatedField(queryset=get_tag_queryset(),many=True)
 
     class Meta:
         model = User
