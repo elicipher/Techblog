@@ -22,6 +22,8 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ArticleListSerializer
     queryset = Article.objects.filter(status = 'publish')
     lookup_field = 'slug'
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'body', 'tag__name'] 
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -31,11 +33,11 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         tag = request.query_params.get('tag_slug')
         queryset = self.queryset
-        print("tag :",tag)
-        print("queryset :",queryset)
         if tag:
             queryset = queryset.filter(tag__slug=tag)
-        serializer = self.get_serializer(queryset, many=True)
+            
+        filtered_queryset = self.filter_queryset(queryset)
+        serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
 
