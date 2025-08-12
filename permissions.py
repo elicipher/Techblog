@@ -20,4 +20,4 @@ class IsOwnerOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS :
             return True
         # else : if request user want change obj should be owner 
-        return obj.author == request.user
+        return obj.owner == request.user

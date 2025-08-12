@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article
+from .models import Article , Podcast , Episode
 
 def get_tag_queryset():
     from blog.models import Tag
@@ -14,13 +14,13 @@ class RelatedArticleSerializer(serializers.ModelSerializer):
 class ArticleDetailSerializer(serializers.ModelSerializer):
     related_posts  = serializers.SerializerMethodField()
     tag = serializers.PrimaryKeyRelatedField(queryset=get_tag_queryset(),many=True)
-    author = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
     class Meta:
         model = Article
         fields = '__all__'
 
-    def get_author(self , obj):
-        return obj.author.full_name
+    def get_owner(self , obj):
+        return obj.owner.full_name
     
     def get_related_posts(self , obj):
         tags = obj.tag.all()
@@ -29,14 +29,49 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 
 class ArticleListSerializer(serializers.ModelSerializer):
     tag = serializers.SerializerMethodField()
-    author = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
     class Meta:
         model = Article
-        fields = ['id', 'title', 'slug', 'author','tag'] 
+        fields = ['id', 'title', 'slug', 'owner','tag'] 
 
     def get_tag(self , obj):
         return [tag.slug for tag in obj.tag.all()]
     
     
-    def get_author(self , obj):
-        return obj.author.full_name
+    def get_owner(self , obj):
+        return obj.owner.full_name
+
+class EpisodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Episode
+        fields = '__all__'
+        read_only_fields  = ['created','update',]
+
+
+
+
+class PodcastDetailSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
+    episodes = EpisodeSerializer(many=True)
+
+    class Meta:
+        model = Podcast
+        fields = '__all__'
+        read_only_fields  = ['publish_date',]
+
+    def get_owner(self , obj):
+        return obj.owner.full_name
+    
+    def create(self , validated_data):
+        episodes_data = validated_data.pop('episodes', [])
+        podcast = Podcast.objects.create(**validated_data)
+        for ep_data in episodes_data :
+            Episode.objects.create(podcast = podcast , **ep_data)
+
+        return podcast
+
+
+
+
+
+
