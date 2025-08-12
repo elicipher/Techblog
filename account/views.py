@@ -108,10 +108,27 @@ class EditProfileView(APIView):
 
     permission_classes = [IsAuthenticated,]
     serializer_class = CompleteProfileSerializer
-    def put(self , request):
-        srz_data = self.serializer_class(instance=request.user,data = request.data )
+    def patch(self , request):
+        srz_data = self.serializer_class(instance=request.user,data = request.data , partial = True)
         if srz_data.is_valid():
             srz_data.save()
             return Response({"staus":"profile changed ."},status=status.HTTP_200_OK)
         return Response(srz_data.errors , status= status.HTTP_400_BAD_REQUEST)
 
+
+class LogoutView(APIView):
+    """
+
+    (Logout View ) : block refresh token and logout
+    
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self , request):
+        try :
+            refresh_token = request.data.get('refresh')
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"status": "logged out"}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
