@@ -13,7 +13,7 @@ def episode_upload_path(obj , filename):
 # Create your models here.
 class Tag(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
+    
 
     def __str__(self):
         return self.name
@@ -28,7 +28,6 @@ class Article(models.Model):
     owner = models.ForeignKey(User , on_delete= models.CASCADE)
     cover = models.ImageField(upload_to='article-covers/',null=True , blank=True)
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
     body = models.TextField()
     tag = models.ManyToManyField(Tag , related_name='article_tag')
     created = models.DateTimeField(auto_now_add=True)
@@ -60,7 +59,6 @@ class Like(models.Model):
 
 class Podcast(models.Model):
     owner = models.ForeignKey(User ,on_delete=models.CASCADE)
-    slug = models.SlugField(unique=True)
     cover = models.ImageField(upload_to='podcast-covers/')
     title = models.CharField(max_length=225)
     created = models.DateTimeField(auto_now_add=True)
@@ -73,7 +71,6 @@ class Podcast(models.Model):
 class Episode(models.Model):
     podcast = models.ForeignKey(Podcast , on_delete=models.CASCADE , related_name='episodes')
     title = models.CharField(max_length=225)
-    slug = models.SlugField(unique=True)
     audio_file = models.FileField(upload_to=episode_upload_path , validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav', 'ogg'])])
     duration = models.DurationField(null= True , blank=True)
     publish_date = models.DateTimeField(auto_now_add=True)

@@ -8,7 +8,7 @@ def get_tag_queryset():
 class RelatedArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ['id', 'title', 'slug','cover']  
+        fields = ['id', 'title','cover']  
 
 
 class ArticleDetailSerializer(serializers.ModelSerializer):
@@ -32,7 +32,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     class Meta:
         model = Article
-        fields = ['id', 'title', 'slug', 'owner','tag'] 
+        fields = ['id', 'title', 'owner','tag'] 
 
     def get_tag(self , obj):
         return [tag.slug for tag in obj.tag.all()]

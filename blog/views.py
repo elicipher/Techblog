@@ -21,7 +21,7 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     
     serializer_class = ArticleListSerializer
     queryset = Article.objects.filter(status = 'publish')
-    lookup_field = 'slug'
+
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'body', 'tag__name'] 
 
@@ -31,10 +31,10 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
         return ArticleDetailSerializer
     
     def list(self, request, *args, **kwargs):
-        tag = request.query_params.get('tag_slug')
+        tag = request.query_params.get('tag_name')
         queryset = self.queryset
         if tag:
-            queryset = queryset.filter(tag__slug=tag)
+            queryset = queryset.filter(tag__name=tag)
             
         filtered_queryset = self.filter_queryset(queryset)
         serializer = self.get_serializer(filtered_queryset, many=True)
@@ -51,7 +51,7 @@ class ArticleManagerViewset(viewsets.ModelViewSet):
     """
 
     serializer_class = ArticleDetailSerializer
-    lookup_field = 'slug'
+
     permission_classes = [IsAuthenticated , IsOwnerOrReadOnly]
     
     def get_queryset(self):
@@ -70,7 +70,7 @@ class PodcastManagerViewset(viewsets.ModelViewSet):
     """
   
     serializer_class = PodcastDetailSerializer
-    lookup_field = 'slug'
+
     permission_classes = [IsAuthenticated , IsOwnerOrReadOnly]
     def get_queryset(self):
         return Podcast.objects.filter(owner = self.request.user)
@@ -85,7 +85,7 @@ class EpisodeViewset(viewsets.ModelViewSet):
     """
     serializer_class = EpisodeSerializer
     permission_classes = [IsAuthenticated ]
-    lookup_field = 'slug'
+
 
     def get_queryset(self):
         return Episode.objects.filter(podcast__owner=self.request.user)
@@ -104,7 +104,7 @@ class PodcasViewset(viewsets.ReadOnlyModelViewSet):
 
     """
     serializer_class = PodcastDetailSerializer
-    lookup_field = 'slug'
+
     queryset = Podcast.objects.all()
     filter_backends = [filters.SearchFilter]
     search_fields = ['owner__full_name','title']
